@@ -6,63 +6,100 @@ Este projeto demonstra a construção de uma aplicação web utilizando **ASP.NE
 
 ## ✅ Funcionalidades Implementadas
 
-### 1. Criar País
+### 1. Criar Cidade com PageModel
 
-* Página `CreateCountry.cshtml` com formulário para cadastrar nome e código de um país.
-* **Validação customizada**: O nome do país e o código devem começar com a mesma letra.
+Criação de uma página chamada `CreateCity.cshtml` com um `PageModel` que utiliza `[BindProperty]` para vincular o nome da cidade enviado via POST.
+
+* Página: `/Pages/CityManager/CreateCity.cshtml`
+* Recebe `CityName` com validação obrigatória.
+* Exibe o nome da cidade após o envio.
 
 ```csharp
-if (!CountryCode.StartsWith(CountryName[0]))
-    ModelState.AddModelError("CountryCode", "O código do país deve começar com a mesma letra do nome do país.");
-```
-
-* Exibição da mensagem de erro vinculada ao campo de código.
-* Redirecionamento após o sucesso (ou mensagem, se preferir).
-
-**Exemplo de uso:**
-
-```
-Nome: Brasil
-Código: BR (válido)
-Código: PT (erro: letras diferentes)
+[BindProperty]
+[Required(ErrorMessage = "O nome da cidade é obrigatório")]
+public string CityName { get; set; }
 ```
 
 ---
 
-### 2. Lista de Cidades com Links Dinâmicos
+### 2. Handler com Parâmetro no OnPost
 
-* Lista fixa em memória:
+Substituição do `[BindProperty]` por um parâmetro direto no método `OnPost(string cityName)`.
 
 ```csharp
-List<string> Cities = new() { "Rio", "São Paulo", "Brasília" };
+public void OnPost(string cityName)
+{
+    CityName = cityName;
+}
 ```
 
-* Uso de **Tag Helpers** com `asp-page` e `asp-route-cityName` para criar links clicáveis:
+Exibe dinamicamente: `Cidade cadastrada com sucesso: {cityName}`
 
-```html
-<a asp-page="CityDetails" asp-route-cityName="@city">@city</a>
-```
+---
 
-**Exemplo de uso:**
+### 3. Validação com Data Annotations
 
-```
-Cidades:
-- Rio → /CityManager/CityDetails/Rio
-- São Paulo → /CityManager/CityDetails/São%20Paulo
+Utilização de `ModelState.IsValid` e atributos `[Required]` e `[MinLength(3)]` para validar entradas no servidor.
+
+```csharp
+public class InputModel {
+    [Required]
+    [MinLength(3)]
+    public string CityName { get; set; }
+}
 ```
 
 ---
 
-### 3. Roteamento com Parâmetros
+### 4. Validação do Lado do Cliente
 
-* Página `CityDetails.cshtml` recebe o nome da cidade via URL:
+Uso de Tag Helpers `asp-for` e `asp-validation-for` com inclusão de `_ValidationScriptsPartial`.
 
+```razor
+<input asp-for="Input.CityName" />
+<span asp-validation-for="Input.CityName"></span>
 ```
-/CityManager/CityDetails/{cityName}
+
+---
+
+### 5. Objeto Complexo: CreateCountry
+
+Formulário que utiliza um `InputModel` com os campos `CountryName` e `CountryCode`, que posteriormente são usados para instanciar um objeto `Country`.
+
+```csharp
+public class Country {
+    public string CountryName { get; set; }
+    public string CountryCode { get; set; }
+}
 ```
 
-* Definida com `@page "{cityName}"` no topo.
-* O valor é recebido via método:
+---
+
+### 6. Validação ISO de Código do País
+
+Adição de `[StringLength(2, MinimumLength = 2)]` para validar códigos como "BR".
+
+```csharp
+[StringLength(2, MinimumLength = 2)]
+public string CountryCode { get; set; }
+```
+
+---
+
+### 7. Cadastro de Vários Países
+
+Criação de uma lista `List<InputModel>` com 5 entradas via `for`, e formulário que envia os dados de todos os países.
+
+```csharp
+[BindProperty]
+public List<InputModel> Countries { get; set; } = new();
+```
+
+---
+
+### 8. Roteamento com Parâmetros na URL
+
+Página `CityDetails.cshtml` que recebe o nome da cidade via URL usando `@page "{cityName}"`.
 
 ```csharp
 public void OnGet(string cityName) {
@@ -70,88 +107,102 @@ public void OnGet(string cityName) {
 }
 ```
 
-**Exemplo de URL acessada:**
-
-```
-/CityManager/CityDetails/RioDeJaneiro
-```
-
 ---
 
-### 4. Escrita de Arquivos `.txt`
+### 9. URLs com Tag Helpers
 
-* Página `SaveNote.cshtml` com um formulário para digitar um conteúdo.
-* Ao submeter, salva em `wwwroot/files/note-{timestamp}.txt`:
+Lista de cidades com links gerados via Tag Helpers:
+
+```razor
+<a asp-page="/CityManager/CityDetails" asp-route-cityName="@city">@city</a>
+```
+
+Lista utilizada:
 
 ```csharp
-var path = Path.Combine("wwwroot/files", $"note-{timestamp}.txt");
-System.IO.File.WriteAllText(path, Input.Content);
-```
-
-* Mostra mensagem de sucesso e link para download do arquivo.
-
-**Exemplo:**
-
-```
-Texto digitado: "Minha anotação."
-Arquivo salvo: note-20250528000100.txt
-Link: /files/note-20250528000100.txt
+List<string> Cities = new() { "Rio", "São Paulo", "Brasília" };
 ```
 
 ---
 
-### 5. Leitura de Arquivos
+### 10. Escrita de Arquivos
 
-* Página `ReadNotes.cshtml` para listar e abrir arquivos `.txt` criados.
-* Lista todos os arquivos do diretório `wwwroot/files`:
+Formulário que salva um conteúdo como `.txt` com nome `note-{timestamp}.txt` no diretório `wwwroot/files`.
 
 ```csharp
-var files = Directory.GetFiles("wwwroot/files");
+await System.IO.File.WriteAllTextAsync(path, Input.Content);
 ```
 
-* Cada arquivo possui um link para visualizar o conteúdo.
+Link de download exibido após submissão:
 
-**Exemplo de listagem:**
-
-```
-Arquivos:
-- note-20250528000100.txt → Visualizar conteúdo
+```razor
+<a href="~/files/@Model.FileName" download>Clique aqui para baixar</a>
 ```
 
 ---
 
-## 🗂️ Estrutura de Diretórios
+### 11. Leitura de Arquivos
+
+Lista todos os arquivos `.txt` e permite visualização de seu conteúdo.
+
+```csharp
+FileNames = Directory.GetFiles(filesDir, "*.txt")
+    .Select(Path.GetFileName)
+    .ToList();
+```
+
+Exibe conteúdo com `@Model.SelectedContent`
+
+---
+
+### 12. Validação Customizada com `ModelState`
+
+Validação onde `CountryCode` deve começar com a mesma letra de `CountryName`. Caso contrário, adiciona erro manual:
+
+```csharp
+if (char.ToUpper(Input.CountryName[0]) != char.ToUpper(Input.CountryCode[0])) {
+    ModelState.AddModelError("Input.CountryCode", "O código do país deve começar com a mesma letra do nome do país.");
+}
+```
+
+---
+
+## 📁 Estrutura de Pastas
 
 ```
 /Pages
   /CityManager
+    - CreateCity.cshtml
     - CityDetails.cshtml
     - CityList.cshtml
-    - SaveNote.cshtml
-    - ReadNotes.cshtml
   /CountryManager
     - CreateCountry.cshtml
+    - CreateMultipleCountries.cshtml
+  /NoteManager
+    - SaveNote.cshtml
+    - ReadNotes.cshtml
 /Models
   - Country.cs
-  - NoteManager.cs
+  - Note.cs
 /wwwroot
   /files
 ```
 
 ---
 
-## ⚙️ Tecnologias Utilizadas
+## 🧪 Tecnologias Utilizadas
 
-* ASP.NET Core Razor Pages (.NET 7+)
-* C# com PageModel
-* Tag Helpers (asp-page, asp-route)
-* File I/O com `System.IO`
+* ASP.NET Core Razor Pages (.NET 7/8)
+* C#
+* HTML + Tag Helpers
 * Model Binding
-* Validação com `ModelState`
+* Data Annotations
+* Validação do lado do servidor e cliente
+* File I/O com System.IO
 
 ---
 
-## 🚀 Executando o Projeto
+## 🛠️ Como Executar
 
 1. Clone o repositório:
 
@@ -160,29 +211,25 @@ git clone https://github.com/usuario/repositorio.git
 cd repositorio
 ```
 
-2. Execute com o .NET CLI:
+2. Execute:
 
 ```bash
 dotnet run
 ```
 
-3. Acesse o navegador:
+3. Acesse no navegador:
 
 ```
 https://localhost:5001
 ```
 
 
-
-
-
-
-
-
 ---
 
-## 👨‍💻 Autor
+## 👤 Autor
 
-Projeto desenvolvido por **Weslley Soares** para prática com ASP.NET Razor Pages, cobrindo tópicos como rotas, validações, formulários, e leitura/escrita de arquivos.
+**Weslley Wallace Castro Soares**
+Estudante da disciplina: Desenvolvimento Web com .NET e Bases de Dados \[25E2\_4]
+Trabalho prático completo com foco em aplicações interativas Razor Pages
 
 ---
