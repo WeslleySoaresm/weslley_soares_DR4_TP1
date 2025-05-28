@@ -40,7 +40,7 @@ namespace CriandoUmaRazorPagecomPageModelePropriedade_Vinculada.Pages.CountryMan
             }
 
             // Aqui você pode salvar ou redirecionar
-            return RedirectToPage("Success");
+            return RedirectToPage("Succes");
         }
     }
 }
