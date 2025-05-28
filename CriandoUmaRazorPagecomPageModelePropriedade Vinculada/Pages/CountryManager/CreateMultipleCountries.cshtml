@@ -1,0 +1,38 @@
+@page
+@model CriandoUmaRazorPagecomPageModelePropriedade_Vinculada.Pages.CountryManager.CreateMultipleCountriesModel
+
+<h2>Cadastrar Múltiplos Países</h2>
+
+<form method="post">
+    @for (int i = 0; i < Model.Countries.Count; i++)
+    {
+        <div class="mb-3">
+            <label asp-for="Countries[i].CountryName">Nome do País</label>
+            <input asp-for="Countries[i].CountryName" class="form-control" />
+            <span asp-validation-for="Countries[i].CountryName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Countries[i].CountryCode">Codigo País</label>
+            <input asp-for="Countries[i].CountryCode" class="form-control" />
+            <span asp-validation-for="Countries[i].CountryCode" class="text-danger"></span>
+        </div>
+        <hr />
+    }
+
+    <button type="submit" class="btn btn-primary">Cadastrar Países</button>
+</form>
+
+@if (Model.SubmittedCountries?.Any() == true)
+{
+    <h3>Países Cadastrados:</h3>
+    <ul>
+        @foreach (var country in Model.SubmittedCountries)
+        {
+            <li>@country.CountryName (@country.CountryCode)</li>
+        }
+    </ul>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

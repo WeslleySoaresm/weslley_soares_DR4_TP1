@@ -1,0 +1,25 @@
+@page
+@model CriandoUmaRazorPagecomPageModelePropriedade_Vinculada.Pages.CityManager.CreateCityModel
+
+<h2>Cadastrar Cidade Turística</h2>
+
+<form method="post">
+    <div>
+        <label for="city">Nome da Cidade:</label>
+        <input id="city" asp-for="Input.CityName" class="form-control" />
+        <span asp-validation-for="Input.CityName" style="color:red"></span>
+    </div>
+
+    <button type="submit">Cadastrar</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.SubmittedCity))
+{
+    <p style="margin-top: 1rem; color: green;">
+     <strong>Cidade cadastrada com sucesso:</strong> @Model.SubmittedCity
+    </p>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,21 @@
+@page
+@model CriandoUmaRazorPagecomPageModelePropriedade_Vinculada.Pages.NoteManager.ReadNotesModel
+
+<h2>Notas Salvas</h2>
+
+<ul>
+@foreach (var file in Model.FileNames)
+{
+    <li>
+        <a asp-page="ReadNotes" asp-route-file="@file">@file</a>
+    </li>
+}
+</ul>
+
+@if (!string.IsNullOrEmpty(Model.SelectedContent))
+{
+    <div class="alert alert-info mt-3">
+        <h4>Conteúdo do Arquivo:</h4>
+        <pre>@Model.SelectedContent</pre>
+    </div>
+}

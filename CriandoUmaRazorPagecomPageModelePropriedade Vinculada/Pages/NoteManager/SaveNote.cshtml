@@ -1,0 +1,25 @@
+@page
+@model CriandoUmaRazorPagecomPageModelePropriedade_Vinculada.Pages.SaveNoteModel
+
+<h2>Escrever Nota</h2>
+
+<form method="post">
+    <div>
+        <label asp-for="Input.Content">Conteúdo:</label><br />
+        <textarea asp-for="Input.Content" rows="6" cols="60"></textarea>
+        <span asp-validation-for="Input.Content" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Salvar Nota</button>
+</form>
+
+@if (Model.FileName != null)
+{
+    <div class="alert alert-success mt-3">
+        Nota salva com sucesso! <br />
+        <a href="~/files/@Model.FileName" download>Clique aqui para baixar</a>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

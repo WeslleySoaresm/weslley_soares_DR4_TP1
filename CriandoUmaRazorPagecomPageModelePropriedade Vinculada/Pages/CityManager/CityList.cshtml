@@ -1,0 +1,13 @@
+@page
+@model CriandoUmaRazorPagecomPageModelePropriedade_Vinculada.Pages.CityManager.CityListModel
+
+<h2>Lista de Cidades</h2>
+
+<ul>
+@foreach (var city in Model.Cities)
+{
+    <li>
+        <a asp-page="/CityManager/CityDetails" asp-route-cityName="@city">@city</a>
+    </li>
+}
+</ul>

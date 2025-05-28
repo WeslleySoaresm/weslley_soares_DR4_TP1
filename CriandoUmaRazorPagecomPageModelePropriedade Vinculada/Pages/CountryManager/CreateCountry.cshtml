@@ -1,0 +1,27 @@
+@page
+@model CriandoUmaRazorPagecomPageModelePropriedade_Vinculada.Pages.CountryManager.CreateCountryModel
+@{
+    ViewData["Title"] = "Criar País";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post">
+    <div>
+        <label asp-for="Input.CountryName">Nome</label>
+        <input asp-for="Input.CountryName" />
+        <span asp-validation-for="Input.CountryName" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="Input.CountryCode">Codigo</label>
+        <input asp-for="Input.CountryCode" />
+        <span asp-validation-for="Input.CountryCode" class="text-danger"></span>
+    </div>
+
+    <button type="submit">Salvar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
