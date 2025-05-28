@@ -172,17 +172,8 @@ dotnet run
 https://localhost:5001
 ```
 
----
 
-## 📸 Capturas de Tela
 
-### Formulário com Validação
-
-![Formulário de País com Validação](docs/form-validacao.png)
-
-### Leitura de Arquivos
-
-![Leitura de Arquivos](docs/lista-arquivos.png)
 
 
 
